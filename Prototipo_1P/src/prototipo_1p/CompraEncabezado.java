@@ -5,6 +5,12 @@
  */
 package prototipo_1p;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Brayan Cifuentes
@@ -41,7 +47,7 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
         jButton3 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         txt_buscar = new javax.swing.JTextField();
-        txt_estado = new javax.swing.JLabel();
+        lbl_estatus = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
 
         setClosable(true);
@@ -82,6 +88,8 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
         });
 
         jLabel6.setText("Digite el ID Compra Encabezado: ");
+
+        lbl_estatus.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
         jButton4.setText("Buscar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -134,7 +142,7 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
                 .addContainerGap(46, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(txt_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbl_estatus, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
@@ -170,7 +178,7 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbl_estatus, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -179,18 +187,101 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        //Codigo que permite insertar registros en al base de datos
+        try {
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("insert into CompraEncabezado values(?,?,?,?)");
+
+            pst.setString(1, txt_compraenc.getText().trim());
+            pst.setString(2, txt_fecha.getText().trim());
+            pst.setString(3, txt_total.getText().trim());
+            pst.setString(4, txt_proveedor.getText().trim());
+            
+                      
+            pst.executeUpdate();
+
+            txt_compraenc.setText("");
+            txt_fecha.setText("");
+            txt_total.setText("");
+            txt_proveedor.setText("");
+            
+
+            lbl_estatus.setText("Registro exitoso.");
+        } catch (Exception e) {
+
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        // TODO add your handling code here:
+        try {
+            String ID = txt_buscar.getText().trim();
+
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("update CompraEncabezado set ID_CompraE = ?, Fecha_Compra=?, TotalCompra=?, ID_Proveedor=? where ID_CompraE = " + ID);
+
+            pst.setString(1, txt_compraenc.getText().trim());
+            pst.setString(2, txt_fecha.getText().trim());
+            pst.setString(3, txt_total.getText().trim());
+            pst.setString(4, txt_proveedor.getText().trim());
+            
+            pst.executeUpdate();
+
+            txt_buscar.setText("");
+            lbl_estatus.setText("Modificación exitosa.");
+
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        // TODO add your handling code here:
+        try {
+
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("delete from CompraEncabezado where ID_CompraE = ?");
+
+            pst.setString(1, txt_buscar.getText().trim());
+            pst.executeUpdate();
+
+            txt_compraenc.setText("");
+            txt_fecha.setText("");
+            txt_total.setText("");
+            txt_proveedor.setText("");
+
+            lbl_estatus.setText("Registro eliminado.");
+
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        
+        //Codigo que permite consultar registros en la base de datos
+        try{
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("select * from CompraEncabezado where ID_CompraE = ?");
+            pst.setString(1, txt_buscar.getText().trim());
+
+            ResultSet rs = pst.executeQuery();
+
+            if(rs.next()){
+                txt_compraenc.setText(rs.getString("ID_CompraE"));
+                txt_fecha.setText(rs.getString("Fecha_Compra"));
+                txt_total.setText(rs.getString ("TotalCompra"));
+                txt_proveedor.setText(rs.getString ("ID_Proveedor"));
+                
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Compra Encabezado no registrada");
+            }
+            
+
+        }catch (Exception e){
+
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
 
@@ -205,9 +296,9 @@ public class CompraEncabezado extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel lbl_estatus;
     private javax.swing.JTextField txt_buscar;
     private javax.swing.JTextField txt_compraenc;
-    private javax.swing.JLabel txt_estado;
     private javax.swing.JTextField txt_fecha;
     private javax.swing.JTextField txt_proveedor;
     private javax.swing.JTextField txt_total;

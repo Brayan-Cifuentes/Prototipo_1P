@@ -5,6 +5,12 @@
  */
 package prototipo_1p;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Brayan Cifuentes
@@ -41,7 +47,7 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
         jButton3 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         txt_buscar = new javax.swing.JTextField();
-        txt_estado = new javax.swing.JLabel();
+        lbl_estado = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         txt_inventario = new javax.swing.JTextField();
@@ -84,6 +90,8 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
         });
 
         jLabel6.setText("Digite el ID Compra Encabezado: ");
+
+        lbl_estado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
         jButton4.setText("Buscar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -128,7 +136,7 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addGap(118, 118, 118)
-                            .addComponent(txt_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lbl_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createSequentialGroup()
                             .addGap(36, 36, 36)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,12 +147,11 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton3)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton4)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                .addComponent(jButton4)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel6)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(txt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -184,7 +191,7 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbl_estado, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -193,18 +200,101 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        //Codigo que permite insertar registros en al base de datos
+        try {
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("insert into CompraDetalle values(?,?,?,?,?)");
+
+            pst.setString(1, txt_compraenc.getText().trim());
+            pst.setString(2, txt_orden.getText().trim());
+            pst.setString(3, txt_cantidad.getText().trim());
+            pst.setString(4, txt_costo.getText().trim());
+            pst.setString(5, txt_inventario.getText().trim());
+                      
+            pst.executeUpdate();
+
+            txt_compraenc.setText("");
+            txt_orden.setText("");
+            txt_cantidad.setText("");
+            txt_costo.setText("");
+            txt_inventario.setText("");
+
+            lbl_estado.setText("Registro exitoso.");
+        } catch (Exception e) {
+
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        // TODO add your handling code here:
+        try {
+            String ID = txt_buscar.getText().trim();
+
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("update CompraDetalle set ID_CompraE = ?, Orden_Compra=?, Cantidad_Compra=?, Compra_Costo=?, ID_Inventario=? where ID_CompraE = " + ID);
+
+            pst.setString(1, txt_compraenc.getText().trim());
+            pst.setString(2, txt_orden.getText().trim());
+            pst.setString(3, txt_cantidad.getText().trim());
+            pst.setString(4, txt_costo.getText().trim());
+            pst.setString(5, txt_inventario.getText().trim());
+            pst.executeUpdate();
+
+            txt_buscar.setText("");
+            lbl_estado.setText("Modificación exitosa.");
+
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+         
+        try {
+
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("delete from CompraDetalle where ID_CompraE = ?");
+
+            pst.setString(1, txt_buscar.getText().trim());
+            pst.executeUpdate();
+
+            txt_compraenc.setText("");
+            txt_orden.setText("");
+            txt_cantidad.setText("");
+            txt_costo.setText("");
+            txt_inventario.setText("");
+
+            lbl_estado.setText("Registro Eliminado.");
+
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
+         //Codigo que permite consultar registros en la base de datos
+        try{
+            Connection cn = DriverManager.getConnection(Home.Base_de_Datos, Home.Usuario, Home.Clave);
+            PreparedStatement pst = cn.prepareStatement("select * from CompraDetalle where ID_CompraE = ?");
+            pst.setString(1, txt_buscar.getText().trim());
+
+            ResultSet rs = pst.executeQuery();
+
+            if(rs.next()){
+                txt_compraenc.setText(rs.getString("ID_CompraE"));
+                txt_orden.setText(rs.getString("Orden_Compra"));
+                txt_cantidad.setText(rs.getString ("Cantidad_Compra"));
+                txt_costo.setText(rs.getString ("Compra_Costo"));
+                txt_inventario.setText(rs.getString ("ID_Inventario"));
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Compra Detalle no registrado");
+            }
+
+        }catch (Exception e){
+
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
 
@@ -220,11 +310,11 @@ public class CompraDetalle extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel lbl_estado;
     private javax.swing.JTextField txt_buscar;
     private javax.swing.JTextField txt_cantidad;
     private javax.swing.JTextField txt_compraenc;
     private javax.swing.JTextField txt_costo;
-    private javax.swing.JLabel txt_estado;
     private javax.swing.JTextField txt_inventario;
     private javax.swing.JTextField txt_orden;
     // End of variables declaration//GEN-END:variables

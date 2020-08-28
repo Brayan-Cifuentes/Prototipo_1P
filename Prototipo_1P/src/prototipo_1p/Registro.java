@@ -45,6 +45,7 @@ public class Registro extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("Registrarse:");
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Usuario:");
 
         txt_usuario.addActionListener(new java.awt.event.ActionListener() {
@@ -53,6 +54,7 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Password:");
 
         btn_registro.setText("Registrarse");
